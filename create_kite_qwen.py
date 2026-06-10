@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 import sys
 import argparse
 import shutil
