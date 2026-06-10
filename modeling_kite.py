@@ -1104,7 +1104,15 @@ class KiteForConditionalGeneration(KitePreTrainedModel):
                   and input_ids.shape[1] == 1):
                 # Retrieve the first layer to inspect the logits and mask out the hidden states
                 # that are set to 0
-                first_layer_past_key_value = past_key_values[0][0][:, :, :, 0]
+                if isinstance(past_key_values, tuple) or isinstance(past_key_values, list):
+                    first_layer_past_key_value = past_key_values[0][0][:, :, :, 0]
+                elif hasattr(past_key_values, "key_cache") and len(past_key_values.key_cache) > 0:
+                    first_layer_past_key_value = past_key_values.key_cache[0][:, :, :, 0]
+                elif hasattr(past_key_values, "to_legacy_cache"):
+                    legacy_past = past_key_values.to_legacy_cache()
+                    first_layer_past_key_value = legacy_past[0][0][:, :, :, 0]
+                else:
+                    raise TypeError(f"Unsupported cache type: {type(past_key_values)}")
 
                 # Sum all dimensions of head_dim (-2) to avoid random errors such as: https://github.com/huggingface/transformers/pull/28032#issuecomment-1863691941
                 batch_index, non_attended_tokens = torch.where(
