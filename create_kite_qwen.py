@@ -42,6 +42,10 @@ def main():
     # Update vocabulary size in top-level config
     kite_config.vocab_size = lm_config.vocab_size
 
+    # Align text hidden size in vision configuration to match language model embeddings size
+    if hasattr(kite_config, "vision_config") and kite_config.vision_config is not None:
+        kite_config.vision_config.text_hidden_size = lm_config.hidden_size
+
     # Ensure auto_map is set correctly for Hugging Face loader classes
     kite_config.auto_map = {
         "AutoConfig": "configuration_kite.KiteConfig",
