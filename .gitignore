@@ -1,0 +1,19 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local checkpoints and trained model outputs
+kite_downscaled_checkpoint/
+kite_projector_checkpoint/
+output_trained/
+.eval_results/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS/IDE metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
