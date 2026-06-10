@@ -107,7 +107,12 @@ class KiteConfig(PretrainedConfig):
         **kwargs,
     ):
         if isinstance(text_config, dict):
-            text_config = DeepseekV3Config(**text_config)
+            model_type = text_config.get("model_type", None)
+            if model_type is not None and model_type != "deepseek_v3" and model_type != "kite_text":
+                from transformers import AutoConfig
+                text_config = AutoConfig.for_model(model_type, **text_config)
+            else:
+                text_config = DeepseekV3Config(**text_config)
         if isinstance(vision_config, dict):
             vision_config = KiteVisionConfig(**vision_config)
         self.text_config = text_config
