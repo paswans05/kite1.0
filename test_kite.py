@@ -119,11 +119,38 @@ def main():
     # Load or generate image
     medias = []
     if args.image_path:
-        if not os.path.exists(args.image_path):
-            raise FileNotFoundError(f"Image not found: {args.image_path}")
-        print(f"Loading image from: {args.image_path}")
-        img = Image.open(args.image_path).convert("RGB")
-        medias.append({"type": "image", "image": img})
+        img_to_load = None
+        if args.image_path.startswith("http://") or args.image_path.startswith("https://"):
+            print(f"Downloading image from URL: {args.image_path}")
+            import urllib.request
+            import tempfile
+            try:
+                temp_dir = tempfile.gettempdir()
+                temp_path = os.path.join(temp_dir, "temp_test_image.jpg")
+                req = urllib.request.Request(
+                    args.image_path, 
+                    headers={'User-Agent': 'Mozilla/5.0'}
+                )
+                with urllib.request.urlopen(req) as response:
+                    with open(temp_path, "wb") as f:
+                        f.write(response.read())
+                img_to_load = temp_path
+            except Exception as e:
+                print(f"[WARNING] Failed to download online image: {e}. Falling back to dummy image.")
+                img_to_load = None
+        else:
+            img_to_load = args.image_path
+            
+        if img_to_load:
+            if not os.path.exists(img_to_load):
+                raise FileNotFoundError(f"Image not found: {img_to_load}")
+            print(f"Loading image from: {img_to_load}")
+            img = Image.open(img_to_load).convert("RGB")
+            medias.append({"type": "image", "image": img})
+        else:
+            print("Generating a dummy image for verification...")
+            img = Image.new("RGB", (100, 100), color=(73, 109, 137))
+            medias.append({"type": "image", "image": img})
     else:
         print("No image path provided. Generating a dummy image for verification...")
         img = Image.new("RGB", (100, 100), color=(73, 109, 137))
