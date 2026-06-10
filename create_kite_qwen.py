@@ -49,6 +49,16 @@ def main():
         "AutoModelForCausalLM": "modeling_kite.KiteForConditionalGeneration"
     }
 
+    # Check flash attention availability dynamically and fall back to eager if not available
+    from transformers.utils import is_flash_attn_2_available
+    if not is_flash_attn_2_available():
+        print("Flash Attention 2 is not available. Setting vision_config and top-level attention implementation to eager...")
+        if hasattr(kite_config, "vision_config") and kite_config.vision_config is not None:
+            kite_config.vision_config._attn_implementation = "eager"
+        if hasattr(kite_config, "text_config") and kite_config.text_config is not None:
+            kite_config.text_config._attn_implementation = "eager"
+        kite_config._attn_implementation = "eager"
+
     print("4. Initializing model architecture (Kite VLM)...")
     # Initialize the model structure (vision tower and projector are randomly initialized)
     model = KiteForConditionalGeneration(kite_config)

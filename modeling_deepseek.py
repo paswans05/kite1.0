@@ -52,7 +52,10 @@ except ImportError:
     except ImportError:
         is_torch_fx_available = lambda: False
 
-from .configuration_deepseek import DeepseekV3Config
+try:
+    from .configuration_deepseek import DeepseekV3Config
+except ImportError:
+    from configuration_deepseek import DeepseekV3Config
 
 if is_flash_attn_2_available():
     from flash_attn import flash_attn_func, flash_attn_varlen_func
