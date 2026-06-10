@@ -63,8 +63,12 @@ from transformers.models.llava.modeling_llava import \
     LlavaCausalLMOutputWithPast
 from transformers.utils import is_flash_attn_2_available
 
-from .configuration_kite import KiteConfig
-from .modeling_deepseek import DeepseekV3ForCausalLM
+try:
+    from .configuration_kite import KiteConfig
+    from .modeling_deepseek import DeepseekV3ForCausalLM
+except ImportError:
+    from configuration_kite import KiteConfig
+    from modeling_deepseek import DeepseekV3ForCausalLM
 
 # Flash attention imports
 if is_flash_attn_2_available():

@@ -11,11 +11,18 @@ from transformers.image_processing_utils import (BaseImageProcessor,
                                                  BatchFeature)
 from transformers.utils import TensorType
 
-from .media_utils import (MediaInput, VideoChunkInput, _to_tensor,
-                          ensure_media_type, get_video_meta, image_to_np,
-                          navit_patchify, navit_resize_image,
-                          navit_resize_video, normalize,
-                          real_sample_fps_and_max_num_frames, timestamp_as_str)
+try:
+    from .media_utils import (MediaInput, VideoChunkInput, _to_tensor,
+                              ensure_media_type, get_video_meta, image_to_np,
+                              navit_patchify, navit_resize_image,
+                              navit_resize_video, normalize,
+                              real_sample_fps_and_max_num_frames, timestamp_as_str)
+except ImportError:
+    from media_utils import (MediaInput, VideoChunkInput, _to_tensor,
+                              ensure_media_type, get_video_meta, image_to_np,
+                              navit_patchify, navit_resize_image,
+                              navit_resize_video, normalize,
+                              real_sample_fps_and_max_num_frames, timestamp_as_str)
 
 try:
     from mecord import VideoReader

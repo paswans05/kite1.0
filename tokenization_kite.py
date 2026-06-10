@@ -11,7 +11,10 @@ from tokenizers import AddedToken
 from transformers.convert_slow_tokenizer import bytes_to_unicode
 from transformers.tokenization_utils import PreTrainedTokenizer
 
-from .tool_declaration_ts import encode_tools_to_typescript_style
+try:
+    from .tool_declaration_ts import encode_tools_to_typescript_style
+except ImportError:
+    from tool_declaration_ts import encode_tools_to_typescript_style
 
 logger = getLogger(__name__)
 VOCAB_FILES_NAMES = {"vocab_file": "tiktoken.model"}
