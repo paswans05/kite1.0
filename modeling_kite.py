@@ -849,7 +849,8 @@ class KiteForConditionalGeneration(KitePreTrainedModel):
                 f"Unsupported mm_projector_type: {proj_config.mm_projector_type}"
             )
 
-        self.language_model = DeepseekV3ForCausalLM(config.text_config)
+        from transformers import AutoModelForCausalLM
+        self.language_model = AutoModelForCausalLM.from_config(config.text_config)
         self.post_init()
 
         if hasattr(self.language_model, 'dtype'):
