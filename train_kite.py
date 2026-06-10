@@ -247,6 +247,16 @@ def main():
     print(f"Loading configuration from: {args.model_path}")
     config = AutoConfig.from_pretrained(args.model_path, trust_remote_code=True)
     
+    # Check flash attention availability dynamically and fall back to eager if not available
+    from transformers.utils import is_flash_attn_2_available
+    if not is_flash_attn_2_available():
+        print("Flash Attention 2 is not available. Setting vision_config and top-level attention implementation to eager...")
+        if hasattr(config, "vision_config") and config.vision_config is not None:
+            config.vision_config._attn_implementation = "eager"
+        if hasattr(config, "text_config") and config.text_config is not None:
+            config.text_config._attn_implementation = "eager"
+        config._attn_implementation = "eager"
+        
     # Apply downscaling if selected
     if args.mode == "downscaled":
         print("Downscaling model configuration parameters for resource-limited training...")
