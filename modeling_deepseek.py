@@ -44,7 +44,13 @@ from transformers.utils import (add_start_docstrings,
                                 is_flash_attn_2_available,
                                 is_flash_attn_greater_or_equal_2_10, logging,
                                 replace_return_docstrings)
-from transformers.utils.import_utils import is_torch_fx_available
+try:
+    from transformers.utils.import_utils import is_torch_fx_available
+except ImportError:
+    try:
+        from transformers.utils import is_torch_fx_available
+    except ImportError:
+        is_torch_fx_available = lambda: False
 
 from .configuration_deepseek import DeepseekV3Config
 
