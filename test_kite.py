@@ -163,7 +163,7 @@ def main():
     messages = [{"role": "user", "content": content_list}]
     
     # Format text using apply_chat_template
-    full_text = processor.apply_chat_template(messages, add_generation_prompt=True)
+    full_text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     
     print(f"Formatted prompt text:\n{full_text}")
     print("Running processor...")

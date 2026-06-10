@@ -150,7 +150,7 @@ class KiteDataset(Dataset):
             messages.append({"role": role, "content": content_list})
 
         # Format text using apply_chat_template
-        full_text = self.processor.apply_chat_template(messages, add_generation_prompt=False)
+        full_text = self.processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=False)
         
         # Apply processor using text + medias signature
         processed = self.processor(text=full_text, medias=medias, return_tensors="pt")
