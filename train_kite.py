@@ -247,8 +247,8 @@ class KiteDataCollator:
 def main():
     parser = argparse.ArgumentParser(description="Kite 1.0 Fine-Tuning and Training Script")
     parser.add_argument("--model_path", type=str, default=".", help="Path to local repository")
-    parser.add_argument("--mode", type=str, default="downscaled", choices=["downscaled", "projector_only"],
-                        help="downscaled: Create a tiny config to fit in memory. projector_only: freeze LLM backbone")
+    parser.add_argument("--mode", type=str, default="downscaled", choices=["downscaled", "projector_only", "full"],
+                        help="downscaled: Create a tiny config to fit in memory. projector_only: freeze LLM backbone. full: load weights and train all parameters.")
     parser.add_argument("--epochs", type=int, default=1, help="Number of training epochs")
     parser.add_argument("--lr", type=float, default=2e-5, help="Learning rate")
     parser.add_argument("--batch_size", type=int, default=1, help="Batch size (recommended: 1)")
@@ -302,7 +302,7 @@ def main():
     processor = AutoProcessor.from_pretrained(args.model_path, trust_remote_code=True)
     
     print("Loading model weights/architecture...")
-    if args.mode == "projector_only":
+    if args.mode == "projector_only" or args.mode == "full":
         model = AutoModelForCausalLM.from_pretrained(
             args.model_path,
             config=config,
