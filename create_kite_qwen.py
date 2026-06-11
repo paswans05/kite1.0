@@ -42,6 +42,9 @@ def main():
     # Update vocabulary size in top-level config
     kite_config.vocab_size = lm_config.vocab_size
 
+    # Align tie_word_embeddings mapping
+    kite_config.tie_word_embeddings = getattr(lm_config, "tie_word_embeddings", False)
+
     # Align text hidden size in vision configuration to match language model embeddings size
     if hasattr(kite_config, "vision_config") and kite_config.vision_config is not None:
         kite_config.vision_config.text_hidden_size = lm_config.hidden_size
