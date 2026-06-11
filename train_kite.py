@@ -86,10 +86,11 @@ class KiteDataset(Dataset):
     Custom Dataset for training Kite 1.0.
     Handles image-text messages and processes them through KiteProcessor.
     """
-    def __init__(self, data_list, processor, dummy_mode=False):
+    def __init__(self, data_list, processor, dummy_mode=False, image_folder=None):
         self.data_list = data_list
         self.processor = processor
         self.dummy_mode = dummy_mode
+        self.image_folder = image_folder
 
     def __len__(self):
         return len(self.data_list)
@@ -110,9 +111,15 @@ class KiteDataset(Dataset):
                 if isinstance(image_val, Image.Image):
                     img = image_val.convert("RGB")
                 elif isinstance(image_val, str):
-                    if not os.path.exists(image_val):
-                        raise FileNotFoundError(f"Image file not found: {image_val}")
-                    img = Image.open(image_val).convert("RGB")
+                    resolved_path = image_val
+                    if self.image_folder and not os.path.isabs(image_val):
+                        resolved_path = os.path.join(self.image_folder, image_val)
+                    
+                    if os.path.exists(resolved_path):
+                        img = Image.open(resolved_path).convert("RGB")
+                    else:
+                        print(f"[WARNING] Image file not found: '{resolved_path}'. Falling back to default gray placeholder.")
+                        img = Image.new("RGB", (224, 224), color=(128, 128, 128))
                 elif isinstance(image_val, dict) and "bytes" in image_val and image_val["bytes"] is not None:
                     import io
                     img = Image.open(io.BytesIO(image_val["bytes"])).convert("RGB")
@@ -249,6 +256,7 @@ def main():
     parser.add_argument("--output_dir", type=str, default="./output_trained", help="Output directory")
     parser.add_argument("--dummy", action="store_true", help="Run with mock dummy image/text dataset")
     parser.add_argument("--data_path", type=str, default="", help="Path to JSON dataset metadata")
+    parser.add_argument("--image_folder", type=str, default=None, help="Path to folder containing local images")
     
     args = parser.parse_args()
     
@@ -371,7 +379,7 @@ def main():
                 traceback.print_exc()
                 sys.exit(1)
                 
-        dataset = KiteDataset(dataset_list, processor, dummy_mode=False)
+        dataset = KiteDataset(dataset_list, processor, dummy_mode=False, image_folder=args.image_folder)
         
     collator = KiteDataCollator(pad_token_id=config.pad_token_id, ignore_index=config.ignore_index)
     dataloader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True, collate_fn=collator)
