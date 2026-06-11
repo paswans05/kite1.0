@@ -1248,6 +1248,8 @@ class KiteForConditionalGeneration(KitePreTrainedModel):
             position_ids.masked_fill_(attention_mask == 0, 1)
             if past_key_values:
                 position_ids = position_ids[:, -input_ids.shape[1]:]
+        elif past_key_values is not None and position_ids is not None:
+            position_ids = position_ids[:, -input_ids.shape[1]:]
 
         # if `inputs_embeds` are passed, we only want to use them in the 1st generation step
         if inputs_embeds is not None and past_key_values is None:

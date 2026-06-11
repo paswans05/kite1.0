@@ -79,6 +79,24 @@ def main():
     
     args = parser.parse_args()
     
+    # Predefined sample text-only questions
+    sample_text_questions = [
+        "Explain what gravity is in simple terms.",
+        "What is the capital of France?",
+        "Write a short poem about a kite.",
+        "How does a visual-language model work when no image is provided?",
+        "Give me a recipe for chocolate chip cookies."
+    ]
+    
+    if not args.image_path:
+        if args.prompt == "What is in this image?":
+            print(f"No image provided. Switching to default text prompt: '{sample_text_questions[0]}'")
+            args.prompt = sample_text_questions[0]
+        print("\nPredefined sample text-only questions you can try using --prompt:")
+        for q in sample_text_questions:
+            print(f"  - --prompt \"{q}\"")
+        print()
+    
     print(f"Loading configuration from: {args.model_path}")
     config = AutoConfig.from_pretrained(args.model_path, trust_remote_code=True)
     
@@ -118,7 +136,10 @@ def main():
     
     # Load or generate image
     medias = []
+    has_image = False
+    
     if args.image_path:
+        has_image = True
         img_to_load = None
         if args.image_path.startswith("http://") or args.image_path.startswith("https://"):
             print(f"Downloading image from URL: {args.image_path}")
@@ -152,12 +173,12 @@ def main():
             img = Image.new("RGB", (100, 100), color=(73, 109, 137))
             medias.append({"type": "image", "image": img})
     else:
-        print("No image path provided. Generating a dummy image for verification...")
-        img = Image.new("RGB", (100, 100), color=(73, 109, 137))
-        medias.append({"type": "image", "image": img})
+        print("No image path provided. Running in text-only mode (without image).")
         
-    # Format message with <image> placeholder
-    content_list = [{"type": "image", "image_url": ""}]
+    # Format message with <image> placeholder only if we have an image
+    content_list = []
+    if has_image:
+        content_list.append({"type": "image", "image_url": ""})
     content_list.append({"type": "text", "text": args.prompt})
     
     messages = [{"role": "user", "content": content_list}]
@@ -167,6 +188,7 @@ def main():
     
     print(f"Formatted prompt text:\n{full_text}")
     print("Running processor...")
+    # Pass medias (which is empty [] for text-only mode) to avoid processor validation error
     inputs = processor(text=full_text, medias=medias, return_tensors="pt")
     
     # Move inputs to device

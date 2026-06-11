@@ -144,12 +144,49 @@ if step4_start != -1:
     cells.insert(step4_start + 1, option_a_cell)
     print("Re-inserted Step 4 options (Dummy, Local JSON, and Hugging Face Dataset).")
 
-# Clean existing Step 6 to reset cleanly
-step6_indices = [i for i, cell in enumerate(cells) if cell["cell_type"] == "markdown" and any("Step 6" in line for line in cell.get("source", []))]
-if step6_indices:
-    idx = step6_indices[0]
+# Clean existing Step 5 and Step 6 to reset cleanly
+step5_indices = [i for i, cell in enumerate(cells) if cell["cell_type"] == "markdown" and any("Step 5" in line for line in cell.get("source", []))]
+if step5_indices:
+    idx = step5_indices[0]
     while idx < len(cells):
         cells.pop(idx)
+
+# Add Step 5 at the end
+step5_md_cell = {
+    "cell_type": "markdown",
+    "metadata": {},
+    "source": [
+        "## Step 5: Test Model (Inference)\n",
+        "You can test the model either with an image (multimodal mode) or using a pure text-only prompt (text-only mode) without any images."
+    ]
+}
+
+step5_option_a_cell = {
+    "cell_type": "code",
+    "execution_count": None,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+        "# Option A: Test the model using a public image URL\n",
+        "!python test_kite.py \\\n",
+        "    --model_path \"./kite_qwen_trained\" \\\n",
+        "    --image_path \"https://i.ibb.co/sdf0DN54/Nitro-Wallpaper-01-3840x2400.jpg\" \\\n",
+        "    --prompt \"Describe what is in this image.\""
+    ]
+}
+
+step5_option_b_cell = {
+    "cell_type": "code",
+    "execution_count": None,
+    "metadata": {},
+    "outputs": [],
+    "source": [
+        "# Option B: Test the model using a pure text question (without any image)\n",
+        "!python test_kite.py \\\n",
+        "    --model_path \"./kite_qwen_trained\" \\\n",
+        "    --prompt \"Explain what gravity is in simple terms.\""
+    ]
+}
 
 # Add Step 6 at the end
 hf_md_cell = {
@@ -175,9 +212,12 @@ hf_code_cell = {
     ]
 }
 
+cells.append(step5_md_cell)
+cells.append(step5_option_a_cell)
+cells.append(step5_option_b_cell)
 cells.append(hf_md_cell)
 cells.append(hf_code_cell)
-print("Appended Hugging Face upload cells.")
+print("Appended Step 5 (Inference Options) and Step 6 (HF Upload) cells.")
 
 # Save notebook
 with open(notebook_path, "w", encoding="utf-8") as f:
