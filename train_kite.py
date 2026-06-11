@@ -257,6 +257,7 @@ def main():
     parser.add_argument("--dummy", action="store_true", help="Run with mock dummy image/text dataset")
     parser.add_argument("--data_path", type=str, default="", help="Path to JSON dataset metadata")
     parser.add_argument("--image_folder", type=str, default=None, help="Path to folder containing local images")
+    parser.add_argument("--max_samples", type=int, default=None, help="Max number of samples to train on")
     
     args = parser.parse_args()
     
@@ -379,6 +380,10 @@ def main():
                 traceback.print_exc()
                 sys.exit(1)
                 
+        if args.max_samples is not None and args.max_samples < len(dataset_list):
+            print(f"Limiting dataset to the first {args.max_samples} samples.")
+            dataset_list = dataset_list.select(range(args.max_samples)) if hasattr(dataset_list, "select") else dataset_list[:args.max_samples]
+
         dataset = KiteDataset(dataset_list, processor, dummy_mode=False, image_folder=args.image_folder)
         
     collator = KiteDataCollator(pad_token_id=config.pad_token_id, ignore_index=config.ignore_index)
