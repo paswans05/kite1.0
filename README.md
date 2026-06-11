@@ -191,6 +191,52 @@ def simple_chat(client: openai.OpenAI, model_name: str):
     print(f'response: {response.choices[0].message.content}')
 ```
 
-## 6. License
+## 6. Testing & Inference
+
+You can run local tests on your fine-tuned or base model checkpoints using the provided Python scripts or import the text backbone into Ollama.
+
+### 6.1 Multimodal Inference (With Image)
+Test the model on an image using an online URL or local file path:
+```bash
+python test_kite.py \
+    --model_path "./kite_qwen_trained" \
+    --image_path "https://i.ibb.co/sdf0DN54/Nitro-Wallpaper-01-3840x2400.jpg" \
+    --prompt "Describe what is in this image."
+```
+
+### 6.2 Text-Only Inference (Without Image)
+To test conversational or text-only prompts, run the script without specifying an `--image_path`:
+```bash
+python test_kite.py \
+    --model_path "./kite_qwen_trained" \
+    --prompt "Who are you?"
+```
+
+Other predefined sample questions can be tested dynamically using `--prompt`.
+
+### 6.3 Local Testing in Ollama (Text Backbone)
+To run and test the conversational text backbone of Kite inside **Ollama**:
+
+1. **Extract and Convert Configuration**:
+   Run the utility script to generate a Qwen2-compatible text configuration and stage the model directory:
+   ```bash
+   python scratch/prepare_ollama_text.py
+   ```
+   This copies the weights, tokenizers, and creates a compatible `config.json` inside `./kite_qwen_text_only`.
+
+2. **Create the Ollama Model**:
+   Build the model using the generated `Modelfile`:
+   ```bash
+   ollama create kite1.0 -f Modelfile
+   ```
+
+3. **Run Inference**:
+   Chat with your local Ollama model directly:
+   ```bash
+   ollama run kite1.0 "Who are you?"
+   ```
+
+## 7. License
 
 Both the code repository and the model weights are released under the [Modified MIT License](LICENSE).
+
