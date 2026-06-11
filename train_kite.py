@@ -105,11 +105,19 @@ class KiteDataset(Dataset):
             medias.append({"type": "image", "image": img})
         else:
             # Real mode
-            image_path = sample.get("image")
-            if image_path:
-                if not os.path.exists(image_path):
-                    raise FileNotFoundError(f"Image file not found: {image_path}")
-                img = Image.open(image_path).convert("RGB")
+            image_val = sample.get("image")
+            if image_val:
+                if isinstance(image_val, Image.Image):
+                    img = image_val.convert("RGB")
+                elif isinstance(image_val, str):
+                    if not os.path.exists(image_val):
+                        raise FileNotFoundError(f"Image file not found: {image_val}")
+                    img = Image.open(image_val).convert("RGB")
+                elif isinstance(image_val, dict) and "bytes" in image_val and image_val["bytes"] is not None:
+                    import io
+                    img = Image.open(io.BytesIO(image_val["bytes"])).convert("RGB")
+                else:
+                    raise ValueError(f"Unsupported image format: {type(image_val)}")
                 medias.append({"type": "image", "image": img})
             
             # Note: Videos can be processed by passing type='video' and video=path
@@ -328,9 +336,26 @@ def main():
         ] * 4  # Repeat to have a tiny batch sequence
         dataset = KiteDataset(dataset_list, processor, dummy_mode=True)
     else:
-        print(f"Loading dataset from: {args.data_path}")
-        with open(args.data_path, "r", encoding="utf-8") as f:
-            dataset_list = json.load(f)
+        # Check if the data_path is a local JSON file
+        if os.path.exists(args.data_path) and args.data_path.endswith(".json"):
+            print(f"Loading local dataset from: {args.data_path}")
+            with open(args.data_path, "r", encoding="utf-8") as f:
+                dataset_list = json.load(f)
+        else:
+            # Try loading from Hugging Face Hub
+            try:
+                from datasets import load_dataset
+                print(f"Loading dataset from Hugging Face Hub: {args.data_path}")
+                hf_dataset = load_dataset(args.data_path)
+                if hasattr(hf_dataset, "keys"):
+                    split_name = "train" if "train" in hf_dataset.keys() else list(hf_dataset.keys())[0]
+                    dataset_list = hf_dataset[split_name]
+                else:
+                    dataset_list = hf_dataset
+            except Exception as e:
+                print(f"[ERROR] Failed to load dataset from local path or Hugging Face Hub: {e}")
+                sys.exit(1)
+                
         dataset = KiteDataset(dataset_list, processor, dummy_mode=False)
         
     collator = KiteDataCollator(pad_token_id=config.pad_token_id, ignore_index=config.ignore_index)
