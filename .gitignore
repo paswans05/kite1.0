@@ -17,3 +17,8 @@ output_trained/
 Thumbs.db
 .vscode/
 .idea/
+
+# Qwen models and checkpoints
+kite_qwen_base/
+kite_qwen_base_test/
+kite_qwen_trained/

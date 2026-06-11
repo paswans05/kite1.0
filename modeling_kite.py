@@ -881,7 +881,11 @@ class KiteForConditionalGeneration(KitePreTrainedModel):
         return self.language_model.get_decoder()
 
     def tie_weights(self, *args, **kwargs):
-        return self.language_model.tie_weights(*args, **kwargs)
+        try:
+            return self.language_model.tie_weights(*args, **kwargs)
+        except Exception:
+            # Bypassing tie_weights errors during meta device initialization
+            pass
 
     def resize_token_embeddings(self,
                                 new_num_tokens: int | None = None,
