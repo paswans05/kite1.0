@@ -284,8 +284,16 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_path, trust_remote_code=True)
     processor = AutoProcessor.from_pretrained(args.model_path, trust_remote_code=True)
     
-    print("Loading model architecture...")
-    model = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
+    print("Loading model weights/architecture...")
+    if args.mode == "projector_only":
+        model = AutoModelForCausalLM.from_pretrained(
+            args.model_path,
+            config=config,
+            trust_remote_code=True,
+            torch_dtype=torch.float32 if not torch.cuda.is_available() else torch.bfloat16
+        )
+    else:
+        model = AutoModelForCausalLM.from_config(config, trust_remote_code=True)
     
     # Configure device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
