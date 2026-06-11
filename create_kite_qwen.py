@@ -79,6 +79,34 @@ def main():
     model.language_model.load_state_dict(lm_model.state_dict(), strict=True)
     print("[SUCCESS] Language model weights successfully copied!")
 
+    print("6.5. Adding special media tokens and resizing model embeddings...")
+    special_tokens_dict = {
+        "additional_special_tokens": [
+            "<|im_end|>", "<|im_user|>", "<|im_assistant|>", 
+            "<|start_header_id|>", "<|end_header_id|>", "[EOT]", 
+            "<|im_system|>", "<|im_middle|>", "<|media_begin|>", 
+            "<|media_content|>", "<|media_end|>", "<|media_pad|>"
+        ]
+    }
+    num_added_toks = lm_tokenizer.add_special_tokens(special_tokens_dict)
+    print(f"Added {num_added_toks} special tokens to the tokenizer.")
+    
+    # Resize embeddings
+    model.resize_token_embeddings(len(lm_tokenizer))
+    
+    # Update config's placeholder token id
+    media_pad_token_id = lm_tokenizer.convert_tokens_to_ids("<|media_pad|>")
+    model.config.media_placeholder_token_id = media_pad_token_id
+    if hasattr(model.config, "vision_config") and model.config.vision_config is not None:
+        if isinstance(model.config.vision_config, dict):
+            model.config.vision_config["media_placeholder_token_id"] = media_pad_token_id
+            model.config.vision_config["text_hidden_size"] = lm_config.hidden_size
+        else:
+            model.config.vision_config.media_placeholder_token_id = media_pad_token_id
+            model.config.vision_config.text_hidden_size = lm_config.hidden_size
+            
+    print(f"Set media_placeholder_token_id to: {media_pad_token_id}")
+
     print(f"7. Saving assembled model and configuration to: {args.output_dir}")
     os.makedirs(args.output_dir, exist_ok=True)
     
