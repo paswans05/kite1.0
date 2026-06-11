@@ -1,0 +1,27 @@
+[
+  {
+    "image": "sample_image.jpg",
+    "conversations": [
+      {
+        "role": "user",
+        "content": "<image>\nWhat is in this image?"
+      },
+      {
+        "role": "assistant",
+        "content": "This is a sample image showing a solid blue background."
+      }
+    ]
+  },
+  {
+    "conversations": [
+      {
+        "role": "user",
+        "content": "Tell me a short story about a kite."
+      },
+      {
+        "role": "assistant",
+        "content": "Once upon a time, a small red kite soared high into the sky, dancing with the wind."
+      }
+    ]
+  }
+]

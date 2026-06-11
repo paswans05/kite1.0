@@ -372,7 +372,8 @@ def main():
                 
                 # Normalize loss to account for gradient accumulation
                 loss = loss / args.grad_accum
-                loss.backward()
+                if loss.requires_grad:
+                    loss.backward()
                 
                 epoch_loss += loss.item() * args.grad_accum
                 

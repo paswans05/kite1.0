@@ -45,6 +45,13 @@ def main():
     # Align tie_word_embeddings mapping
     kite_config.tie_word_embeddings = getattr(lm_config, "tie_word_embeddings", False)
 
+    # Clear or copy quantization config based on the pre-trained language model config
+    if getattr(lm_config, "quantization_config", None) is not None:
+        kite_config.quantization_config = lm_config.quantization_config
+    else:
+        if hasattr(kite_config, "quantization_config"):
+            delattr(kite_config, "quantization_config")
+
     # Align text hidden size in vision configuration to match language model embeddings size
     if hasattr(kite_config, "vision_config") and kite_config.vision_config is not None:
         kite_config.vision_config.text_hidden_size = lm_config.hidden_size
