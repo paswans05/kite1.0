@@ -345,15 +345,30 @@ def main():
             # Try loading from Hugging Face Hub
             try:
                 from datasets import load_dataset
-                print(f"Loading dataset from Hugging Face Hub: {args.data_path}")
-                hf_dataset = load_dataset(args.data_path)
+                # Support passing repo/file.json, e.g. "liuhaotian/LLaVA-Instruct-150K/llava_instruct_150k.json"
+                if ".json" in args.data_path:
+                    parts = args.data_path.split("/")
+                    if len(parts) >= 3:
+                        repo_id = "/".join(parts[:-1])
+                        file_name = parts[-1]
+                        print(f"Loading dataset from Hugging Face Hub: repo='{repo_id}', file='{file_name}'")
+                        hf_dataset = load_dataset(repo_id, data_files=file_name)
+                    else:
+                        print(f"Loading dataset from Hugging Face Hub: {args.data_path}")
+                        hf_dataset = load_dataset(args.data_path)
+                else:
+                    print(f"Loading dataset from Hugging Face Hub: {args.data_path}")
+                    hf_dataset = load_dataset(args.data_path)
+                
                 if hasattr(hf_dataset, "keys"):
                     split_name = "train" if "train" in hf_dataset.keys() else list(hf_dataset.keys())[0]
                     dataset_list = hf_dataset[split_name]
                 else:
                     dataset_list = hf_dataset
             except Exception as e:
+                import traceback
                 print(f"[ERROR] Failed to load dataset from local path or Hugging Face Hub: {e}")
+                traceback.print_exc()
                 sys.exit(1)
                 
         dataset = KiteDataset(dataset_list, processor, dummy_mode=False)
