@@ -184,7 +184,7 @@ step5_option_b_cell = {
         "# Option B: Test the model using a pure text question (without any image)\n",
         "!python test_kite.py \\\n",
         "    --model_path \"./kite_qwen_trained\" \\\n",
-        "    --prompt \"Explain what gravity is in simple terms.\""
+        "    --prompt \"Who are you?\""
     ]
 }
 

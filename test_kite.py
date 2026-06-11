@@ -81,6 +81,7 @@ def main():
     
     # Predefined sample text-only questions
     sample_text_questions = [
+        "Who are you?",
         "Explain what gravity is in simple terms.",
         "What is the capital of France?",
         "Write a short poem about a kite.",
