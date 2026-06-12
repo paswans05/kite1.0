@@ -102,15 +102,15 @@ if step4_start != -1:
         "metadata": {},
         "outputs": [],
         "source": [
-            "# Option B: Train with actual local JSON dataset (change data_path to your uploaded dataset JSON)\n",
+            "# Option B: Fine-Tune text identity (train both projector and text backbone on identity dataset)\n",
             "!python train_kite.py \\\n",
             "    --model_path \"./kite_qwen_base\" \\\n",
-            "    --mode \"projector_only\" \\\n",
+            "    --mode \"full\" \\\n",
             "    --data_path \"./sample_data.json\" \\\n",
-            "    --epochs 3 \\\n",
+            "    --epochs 10 \\\n",
             "    --lr 2e-5 \\\n",
             "    --batch_size 2 \\\n",
-            "    --grad_accum 4 \\\n",
+            "    --grad_accum 1 \\\n",
             "    --output_dir \"./kite_qwen_trained\""
         ]
     }
