@@ -46,13 +46,14 @@ def main():
         sys.exit(1)
 
     try:
-        # Step 2: Upload all files in the folder
+        # Step 2: Upload all files in the folder (ignoring intermediate checkpoint folders)
         print(f"Uploading files from '{args.folder_path}' to HF Hub...")
         api.upload_folder(
             folder_path=args.folder_path,
             repo_id=args.repo_id,
             repo_type="model",
-            token=args.token
+            token=args.token,
+            ignore_patterns=["**/checkpoint-epoch-*"]
         )
         print("=" * 60)
         print("[SUCCESS] All files successfully uploaded!")
