@@ -4,10 +4,11 @@ import argparse
 
 def main():
     parser = argparse.ArgumentParser(description="Convert or restore config.json inside ./kite1.0 for Ollama compatibility.")
+    parser.add_argument("--model_path", type=str, default="./kite1.0", help="Path to model directory")
     parser.add_argument("--restore", action="store_true", help="Restore config.json to VLM configuration from config_vlm.json")
     args = parser.parse_args()
 
-    model_dir = "./kite1.0"
+    model_dir = args.model_path
     config_path = os.path.join(model_dir, "config.json")
     backup_path = os.path.join(model_dir, "config_vlm.json")
 
@@ -19,7 +20,7 @@ def main():
         if os.path.exists(config_path):
             os.remove(config_path)
         os.rename(backup_path, config_path)
-        print("Successfully restored VLM configuration inside ./kite1.0")
+        print(f"Successfully restored VLM configuration inside {model_dir}")
         return
 
     # Otherwise, perform the conversion
@@ -57,11 +58,11 @@ def main():
     with open(config_path, "w") as f:
         json.dump(text_config, f, indent=2)
 
-    print("Created config.json for Ollama Qwen2 compatibility inside ./kite1.0")
+    print(f"Created config.json for Ollama Qwen2 compatibility inside {model_dir}")
 
     # Update Modelfile FROM instruction
-    modelfile_content = """# Ollama Modelfile for Kite 1.0 (Text Backbone Only)
-FROM ./kite1.0
+    modelfile_content = f"""# Ollama Modelfile for Kite 1.0 (Text Backbone Only)
+FROM {model_dir}
 
 # Set inference parameters
 PARAMETER temperature 0.7
