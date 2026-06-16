@@ -1,5 +1,5 @@
 # Ollama Modelfile for Kite 1.0 (Text Backbone Only)
-FROM ./kite_qwen_text_only
+FROM ./kite1.0
 
 # Set inference parameters
 PARAMETER temperature 0.7

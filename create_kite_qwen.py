@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser(description="Assemble Kite Multimodal Model with a pre-trained Qwen/Llama text backbone")
     parser.add_argument("--lm_model_id", type=str, default="Qwen/Qwen2.5-0.5B-Instruct", 
                         help="Hugging Face model ID for the pre-trained language model backbone")
-    parser.add_argument("--output_dir", type=str, default="./kite_qwen_base", 
+    parser.add_argument("--output_dir", type=str, default="./kite1.0", 
                         help="Output directory to save the assembled model configuration and weights")
     args = parser.parse_args()
 

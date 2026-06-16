@@ -246,14 +246,14 @@ class KiteDataCollator:
 # ==========================================
 def main():
     parser = argparse.ArgumentParser(description="Kite 1.0 Fine-Tuning and Training Script")
-    parser.add_argument("--model_path", type=str, default=".", help="Path to local repository")
+    parser.add_argument("--model_path", type=str, default="./kite1.0", help="Path to local repository")
     parser.add_argument("--mode", type=str, default="downscaled", choices=["downscaled", "projector_only", "full"],
                         help="downscaled: Create a tiny config to fit in memory. projector_only: freeze LLM backbone. full: load weights and train all parameters.")
     parser.add_argument("--epochs", type=int, default=1, help="Number of training epochs")
     parser.add_argument("--lr", type=float, default=2e-5, help="Learning rate")
     parser.add_argument("--batch_size", type=int, default=1, help="Batch size (recommended: 1)")
     parser.add_argument("--grad_accum", type=int, default=4, help="Gradient accumulation steps")
-    parser.add_argument("--output_dir", type=str, default="./output_trained", help="Output directory")
+    parser.add_argument("--output_dir", type=str, default="./kite1.0", help="Output directory")
     parser.add_argument("--dummy", action="store_true", help="Run with mock dummy image/text dataset")
     parser.add_argument("--data_path", type=str, default="", help="Path to JSON dataset metadata")
     parser.add_argument("--image_folder", type=str, default=None, help="Path to folder containing local images")

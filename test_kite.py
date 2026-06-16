@@ -73,7 +73,7 @@ from transformers import AutoConfig, AutoTokenizer, AutoProcessor, AutoModelForC
 
 def main():
     parser = argparse.ArgumentParser(description="Kite 1.0 Testing and Inference Script")
-    parser.add_argument("--model_path", type=str, required=True, help="Path to fine-tuned model checkpoint directory")
+    parser.add_argument("--model_path", type=str, default="./kite1.0", help="Path to fine-tuned model checkpoint directory")
     parser.add_argument("--image_path", type=str, default="", help="Path to image file (optional, will use dummy if empty)")
     parser.add_argument("--prompt", type=str, default="What is in this image?", help="Prompt question for the model")
     
