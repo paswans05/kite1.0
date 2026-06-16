@@ -258,6 +258,8 @@ def main():
     parser.add_argument("--data_path", type=str, default="", help="Path to JSON dataset metadata")
     parser.add_argument("--image_folder", type=str, default=None, help="Path to folder containing local images")
     parser.add_argument("--max_samples", type=int, default=None, help="Max number of samples to train on")
+    parser.add_argument("--max_shard_size", type=str, default="5GB", help="Max size of model shards (e.g., '500MB', '5GB') to force creation of model.safetensors.index.json")
+    parser.add_argument("--save_epochs", action="store_true", help="Save intermediate checkpoints at the end of each epoch")
     
     args = parser.parse_args()
     
@@ -441,10 +443,18 @@ def main():
                 
         print(f"Epoch {epoch+1} completed. Average Loss: {epoch_loss / len(dataloader):.4f}")
         
+        if args.save_epochs:
+            checkpoint_dir = os.path.join(args.output_dir, f"checkpoint-epoch-{epoch+1}")
+            os.makedirs(checkpoint_dir, exist_ok=True)
+            print(f"Saving epoch {epoch+1} checkpoint to: {checkpoint_dir}")
+            model.save_pretrained(checkpoint_dir, max_shard_size=args.max_shard_size)
+            tokenizer.save_pretrained(checkpoint_dir)
+            processor.save_pretrained(checkpoint_dir)
+        
     # Save the trained model
     os.makedirs(args.output_dir, exist_ok=True)
     print(f"Saving fine-tuned model weights and configurations to: {args.output_dir}")
-    model.save_pretrained(args.output_dir)
+    model.save_pretrained(args.output_dir, max_shard_size=args.max_shard_size)
     tokenizer.save_pretrained(args.output_dir)
     processor.save_pretrained(args.output_dir)
     print("[SUCCESS] Training completed and weights saved successfully!")
