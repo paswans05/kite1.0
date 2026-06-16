@@ -12,8 +12,8 @@ except ImportError:
 
 def main():
     parser = argparse.ArgumentParser(description="Upload a trained model or configuration folder to the Hugging Face Hub.")
-    parser.add_argument("--folder_path", type=str, default="./kite_qwen_trained",
-                        help="Path to the local folder containing model weights and configs (default: ./kite_qwen_trained)")
+    parser.add_argument("--folder_path", type=str, default="./kite1.0",
+                        help="Path to the local folder containing model weights and configs (default: ./kite1.0)")
     parser.add_argument("--repo_id", type=str, required=True,
                         help="The target repository ID on Hugging Face (e.g., 'your_username/kite-qwen-0.5b')")
     parser.add_argument("--token", type=str, default=None,
