@@ -71,7 +71,7 @@ if step4_start != -1:
         "metadata": {},
         "source": [
             "## Step 4: Fine-Tune the Multimodal Projector (Training)\n",
-            "Run `train_kite.py` in `projector_only` mode pointing to `./kite_qwen_base`. This freezes the pre-trained text backbone and trains only the Multimodal Projector and Vision Tower on the GPU.\n",
+            "Run `train_kite.py` in `projector_only` mode pointing to `./kite1.0`. This freezes the pre-trained text backbone and trains only the Multimodal Projector and Vision Tower on the GPU.\n",
             "\n",
             "You can choose to train with a dummy dataset, a local JSON dataset, or load a dataset directly from the Hugging Face Hub."
         ]
@@ -85,14 +85,14 @@ if step4_start != -1:
         "source": [
             "# Option A: Train with the dummy dataset (quick run to verify pipeline)\n",
             "!python train_kite.py \\\n",
-            "    --model_path \"./kite_qwen_base\" \\\n",
+            "    --model_path \"./kite1.0\" \\\n",
             "    --mode \"projector_only\" \\\n",
             "    --dummy \\\n",
             "    --epochs 1 \\\n",
             "    --lr 2e-5 \\\n",
             "    --batch_size 1 \\\n",
             "    --grad_accum 4 \\\n",
-            "    --output_dir \"./kite_qwen_trained\""
+            "    --output_dir \"./kite1.0\""
         ]
     }
     
@@ -104,14 +104,14 @@ if step4_start != -1:
         "source": [
             "# Option B: Fine-Tune text identity (train both projector and text backbone on identity dataset)\n",
             "!python train_kite.py \\\n",
-            "    --model_path \"./kite_qwen_base\" \\\n",
+            "    --model_path \"./kite1.0\" \\\n",
             "    --mode \"full\" \\\n",
             "    --data_path \"./sample_data.json\" \\\n",
             "    --epochs 10 \\\n",
             "    --lr 2e-5 \\\n",
             "    --batch_size 2 \\\n",
             "    --grad_accum 1 \\\n",
-            "    --output_dir \"./kite_qwen_trained\""
+            "    --output_dir \"./kite1.0\""
         ]
     }
     
@@ -126,7 +126,7 @@ if step4_start != -1:
             "# --max_samples limits the training data size to ensure it completes before Colab disconnects\n",
             "!pip install -q datasets\n",
             "!python train_kite.py \\\n",
-            "    --model_path \"./kite_qwen_base\" \\\n",
+            "    --model_path \"./kite1.0\" \\\n",
             "    --mode \"projector_only\" \\\n",
             "    --data_path \"liuhaotian/LLaVA-Instruct-150K/llava_instruct_150k.json\" \\\n",
             "    --image_folder \"/content/train2017\" \\\n",
@@ -135,7 +135,7 @@ if step4_start != -1:
             "    --lr 2e-5 \\\n",
             "    --batch_size 2 \\\n",
             "    --grad_accum 4 \\\n",
-            "    --output_dir \"./kite_qwen_trained\""
+            "    --output_dir \"./kite1.0\""
         ]
     }
     
@@ -169,7 +169,7 @@ step5_option_a_cell = {
     "source": [
         "# Option A: Test the model using a public image URL\n",
         "!python test_kite.py \\\n",
-        "    --model_path \"./kite_qwen_trained\" \\\n",
+        "    --model_path \"./kite1.0\" \\\n",
         "    --image_path \"https://i.ibb.co/sdf0DN54/Nitro-Wallpaper-01-3840x2400.jpg\" \\\n",
         "    --prompt \"Describe what is in this image.\""
     ]
@@ -183,7 +183,7 @@ step5_option_b_cell = {
     "source": [
         "# Option B: Test the model using a pure text question (without any image)\n",
         "!python test_kite.py \\\n",
-        "    --model_path \"./kite_qwen_trained\" \\\n",
+        "    --model_path \"./kite1.0\" \\\n",
         "    --prompt \"Who are you?\""
     ]
 }
@@ -194,7 +194,7 @@ hf_md_cell = {
     "metadata": {},
     "source": [
         "## Step 6: Upload the Fine-Tuned Model to Hugging Face Hub\n",
-        "Upload the folder of your fine-tuned model (`./kite_qwen_trained`) directly to your Hugging Face account with the model name `kite-i0.5b`."
+        "Upload the folder of your fine-tuned model (`./kite1.0`) directly to your Hugging Face account with the model name `kite-i0.5b`."
     ]
 }
 
@@ -206,7 +206,7 @@ hf_code_cell = {
     "source": [
         "# Replace \"hf_YOUR_WRITE_TOKEN_HERE\" with your actual Hugging Face write token\n",
         "!python upload_to_hf.py \\\n",
-        "    --folder_path \"./kite_qwen_trained\" \\\n",
+        "    --folder_path \"./kite1.0\" \\\n",
         "    --repo_id \"paswans05/kite-i0.5b\" \\\n",
         "    --token \"hf_YOUR_WRITE_TOKEN_HERE\""
     ]
